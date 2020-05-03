@@ -8,9 +8,9 @@ class UserAddress extends Model
 {
     // 批量赋值
     protected $fillable = [
+        'region',
         'province',
-        'city',
-        'district',
+        'town',
         'address',
         'zip',
         'contact_name',
