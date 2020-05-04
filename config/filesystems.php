@@ -64,6 +64,12 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
         ],
+        'shop' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/shop'),
+            'url' => env('APP_URL'). '/storage/shop',
+            'visibility' => 'public',
+        ],
 
     ],
 
