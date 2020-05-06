@@ -42,7 +42,11 @@
                                                                              value="1"><span>kg</span><span
                                         class="stock"></span></div>
                             <div class="buttons">
-                                <button class="btn btn-success btn-favor">❤ 收藏</button>
+                                @if($favored)
+                                    <button class="btn btn-danger btn-disfavor">取消收藏</button>
+                                @else
+                                    <button class="btn btn-success btn-favor">❤ 收藏</button>
+                                @endif
                                 <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
                             </div>
                         </div>
@@ -75,11 +79,46 @@
 @section('js')
     <script>
         $(document).ready(function () {
+            // 库存显示
             $('[data-toggle="tolltip"]').tooltip({trigger: 'hover'});
             $('.sku-btn').click(function () {
                 $('.product-info .price span').text($(this).data('price'));
                 $('.product-info .stock').text('库存: ' + $(this).data('stock') + '件');
-            })
-        })
+            });
+
+            // 商品收藏
+            $('.btn-favor').click(function () {
+                // 发送一个post ajax请求 , 请求url 通过后端route() 函数产生
+                axios.post('{{ route('products.favor', ['product' => $product->id]) }}').then(function () {
+                    // 操作成功
+                    swal('收藏成功', '', 'success').then(function () {
+                        location.reload();
+                    });
+                }, function (error) {
+                    // 请求失败
+                    // 如果返回码401 代表没有登录
+                    if (error.response && error.response.status == 401) {
+                        swal('您还未登录, 请登录再试', '', 'error');
+                    } else if (error.response && (error.response.data.msg || error.response.data.message)) {
+                        // 其他有 msg 或者 message 字段的情况
+                        swal(error.response.data.msg ? error.response.data.msg : error.response.data.message, '', 'error');
+                    } else {
+                        // 其他情况是系统挂了
+                        swal('系统错误', '', 'error');
+                    }
+                });
+            });
+
+            // 取消收藏
+            $('.btn-disfavor').click(function () {
+                axios.delete('{{ route('products.disfavor', ['product' => $product->id]) }}').then(function () {
+                    swal('操作成功', '', 'success').then(function () {
+                        location.reload();
+                    });
+                });
+            });
+
+
+        });
     </script>
 @endsection

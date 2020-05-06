@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 
 class ProductsController extends Controller
 {
@@ -61,9 +62,39 @@ class ProductsController extends Controller
         if (!$product->on_sale) {
             throw new \Exception('商品未上架');
         }
+        // 判断是否已经收藏
+        $favored = false;
+        // 用户未登录时返回null, 以登陆时返回对应的用户对象
+        if ($user = $request->user()) {
+            // 当前用户以收藏的商品中搜索id 为当前商品id 的商品
+            $favored = boolval($user->favoriteProducts()->find($product->id));
+        }
 
         return view('products.show', [
             'product' => $product,
+            'favored' => $favored,
         ]);
+    }
+
+    // 新增收藏
+    public function favor(Product $product, Request $request)
+    {
+        $user = $request->user();
+        if ($user->favoriteProducts()->find($product->id)) {
+            return [];
+        }
+
+        $user->favoriteProducts()->attach($product);
+
+        return [];
+    }
+
+    // 取消收藏
+    public function disfavor(Product $product, Request $request)
+    {
+        $user = $request->user();
+        $user->favoriteProducts()->detach($product);
+
+        return [];
     }
 }
