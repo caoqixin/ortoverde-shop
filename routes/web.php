@@ -34,6 +34,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     // 添加购物车
     Route::post('cart', 'CartController@add')->name('cart.add');
+    // 购物车页面
+    Route::get('cart', 'CartController@index')->name('cart.index');
+    // 购物车移除
+    Route::delete('cart/{sku}', 'CartController@remove')->name('cart.remove');
 });
 
 // 商品列表

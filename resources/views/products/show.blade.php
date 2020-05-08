@@ -127,7 +127,9 @@
                     amount: $('.cart_amount input').val(),
                 }).then(function () {
                     // 请求执行成功
-                    swal('加入购物车成功', '', 'success');
+                    swal('加入购物车成功', '', 'success').then(function () {
+                        location.href = '{{ route('cart.index') }}';
+                    });
                 }, function (error) {
                     // 请求失败
                     if (error.response.status === 401) {
