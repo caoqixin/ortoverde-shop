@@ -13,6 +13,21 @@ use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
+
+    // 用户显示订单页面
+    public function index(Request $request)
+    {
+        $orders = Order::query()
+            // 使用 with 方法预加载 ,避免 n+ 1 问题
+            ->with(['items.product', 'items.productSku'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
+
+        return view('orders.index', ['orders' => $orders]);
+    }
+
+
     // 创建订单
     public function store(OrderRequest $request)
     {
@@ -26,13 +41,13 @@ class OrdersController extends Controller
 
             // 创建一个订单
             $order = new Order([
-               'address' => [
-                  // 将地址信息放入订单
-                   'address' => $address->full_address,
-                   'zip' => $address->zip,
-                   'contact_name' => $address->contact_name,
-                   'contact_phone' => $address->contact_phone,
-               ] ,
+                'address' => [
+                    // 将地址信息放入订单
+                    'address' => $address->full_address,
+                    'zip' => $address->zip,
+                    'contact_name' => $address->contact_name,
+                    'contact_phone' => $address->contact_phone,
+                ],
                 'remark' => $request->input('remark'),
                 'total_amount' => 0,
             ]);
