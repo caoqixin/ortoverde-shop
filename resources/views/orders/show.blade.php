@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h4>
                         <span>订单详情</span>
-                        <button class="btn btn-success float-right" onclick="window.history.back();"><i class="fa fa-backward"></i> 返回</button>
+                        <button class="btn btn-success float-right btn-back"><i class="fa fa-backward"></i> 返回</button>
                     </h4>
                 </div>
                 <div class="card-body">
@@ -87,4 +87,20 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function () {
+            $('.btn-back').click(function () {
+                let last_url = document.referrer;
+
+                if (last_url === `{!! config('app.url') !!}/orders`) {
+                    history.back();
+                } else {
+                    location.href = `{!! config('app.url') !!}/orders`;
+                }
+            });
+        });
+    </script>
 @endsection
