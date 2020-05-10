@@ -178,7 +178,9 @@
                 });
 
                 axios.post('{{ route('orders.store') }}', req).then(function (response) {
-                    swal('订单提交成功', '', 'success');
+                    swal('订单提交成功', '', 'success').then(()=>{
+                        location.href = '/orders/' + response.data.id;
+                    });
                 }, function (err) {
                     if (err.response.status == 422) {
                         // http 状态码为 422 代表用户输入校验失败
