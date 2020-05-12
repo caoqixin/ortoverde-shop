@@ -52,10 +52,14 @@
                                                             &euro;{{ $order->total_amount }}</td>
                                                         <td rowspan="{{ count($order->items) }}" class="text-center">
                                                             @if($order->paid_at)
-                                                                @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
-                                                                    已支付
+                                                                @if($order->payment_method == 'delivery')
+                                                                    已确认
                                                                 @else
-                                                                    {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+                                                                    @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
+                                                                        已支付
+                                                                    @else
+                                                                        {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+                                                                    @endif
                                                                 @endif
                                                             @elseif($order->closed)
                                                                 已关闭

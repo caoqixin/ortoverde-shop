@@ -69,18 +69,30 @@
                                 <span>订单状态: </span>
                                 <div class="value">
                                     @if($order->paid_at)
-                                        @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
-                                            已支付
+                                        @if($order->payment_method == 'delivery')
+                                            已确认
                                         @else
-                                            {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+                                            @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
+                                                已支付
+                                            @else
+                                                {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+                                            @endif
                                         @endif
                                     @elseif($order->closed)
                                         已关闭
                                     @else
-                                        未支付
+                                        未支付|未确认
                                     @endif
                                 </div>
                             </div>
+                            <!--支付开始-->
+                            @if(!$order->paid_at && !$order->closed)
+                                <div class="payment-buttons">
+                                    <button class="btn btn-info btn-sm btn-delivery">货到付款</button>
+                                    {{--                                    <a class="btn btn-info btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付宝支付</a>--}}
+                                </div>
+                        @endif
+                        <!--支付结束-->
                         </div>
                     </div>
                 </div>
@@ -100,6 +112,31 @@
                 } else {
                     location.href = `{!! config('app.url') !!}/orders`;
                 }
+            });
+
+            $('.btn-delivery').click(function () {
+                axios.post('{{ route('payment.received', ['order' => $order->id]) }}').then(function () {
+                    location.reload();
+                },function (error) {
+                    // 请求失败
+                    if (error.response.status === 401) {
+                        // http 401 表示用户未登录
+                        swal('请先登录再试', '', 'error');
+                    } else if (error.response.status === 422) {
+                        // http 状态码 422 表示用户出入校验失败
+                        var html = '<div>';
+                        _.each(error.response.data.errors, function (errors) {
+                            _.each(errors, function (error) {
+                                html += error + '<br>';
+                            })
+                        });
+
+                        html += '</div>';
+                        swal({content: $(html)[0], icon: 'error'});
+                    } else {
+                        swal('系统错误', '', 'error');
+                    }
+                });
             });
         });
     </script>
