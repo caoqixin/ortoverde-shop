@@ -21,4 +21,7 @@ Route::group([
     $router->get('products/{id}/edit', 'ProductsController@edit');
     $router->put('products/{id}', 'ProductsController@update');
     $router->delete('products/{id}', 'ProductsController@destroy');
+
+    // 订单显示
+    $router->get('orders', 'OrdersController@index')->name('admin.orders.index');
 });
