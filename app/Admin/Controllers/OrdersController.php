@@ -2,15 +2,21 @@
 
 namespace App\Admin\Controllers;
 
+use App\Exceptions\InvalidRequestException;
 use App\Models\Order;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 
 class OrdersController extends AdminController
 {
+
+    // 使用 validate
+    use ValidatesRequests;
     /**
      * Title for current resource.
      *
@@ -74,5 +80,39 @@ class OrdersController extends AdminController
         return $content->header('查看订单')->body(view('admin.orders.show', [
             'order' => Order::find($id),
         ]));
+    }
+
+    // 订单发货
+    public function ship(Order $order, Request $request)
+    {
+        // 判断当前订单是否已经支付
+        if (!$order->paid_at) {
+            throw new InvalidRequestException('该订单为付款或者为确认');
+        }
+
+        // 判断当前订单发货状态是否为未发货
+        if ($order->ship_status !== Order::SHIP_STATUS_PENDING) {
+            throw new InvalidRequestException('该订单已发货');
+        }
+
+        // Laravel 5.5 之后validate方法可以返回校验过的值
+        $data = $this->validate($request, [
+            'contact_name' => ['required'],
+            'contact_phone' => ['required'],
+        ],[], [
+            'contact_name' => '送货员姓名',
+            'contact_phone' => '送货员电话',
+        ]);
+
+        // 将订单发货状态改为已发货, 并存入物流信息
+        $order->update([
+            'ship_status' => Order::SHIP_STATUS_DELIVERED,
+            // 我们在 Order 模型的 $casts 属性里指明了 ship_data 是一个数组
+            // 因此这里可以直接把数组传过去
+            'ship_data' => $data,
+        ]);
+
+        // 返回上一页
+        return redirect()->back();
     }
 }
