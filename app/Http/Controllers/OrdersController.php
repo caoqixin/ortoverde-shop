@@ -56,4 +56,22 @@ class OrdersController extends Controller
 
 
     }
+
+
+    // 确认收货
+    public function received(Order $order, Request $request)
+    {
+        // 校验权限
+        $this->authorize('own', $order);
+
+        // 判断订单的发货状态是否为已发货
+        if ($order->ship_status !== Order::SHIP_STATUS_DELIVERED) {
+            throw new InvalidRequestException('该订单还未发货');
+        }
+
+        // 更新发货状态为已收货
+        $order->update(['ship_status' => Order::SHIP_STATUS_RECEIVED]);
+
+        return $order;
+    }
 }

@@ -59,6 +59,22 @@
                                 <div class="line-label">订单编号:</div>
                                 <div class="line-value">{{ $order->no }}</div>
                             </div>
+                            {{--                        物流状态--}}
+                            <div class="line">
+                                <div class="line-label">物流状态:</div>
+                                <div class="line-value">{{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}</div>
+                            </div>
+                            {{--                        如果有物流信息则展示--}}
+                            @if($order->ship_data)
+                                <div class="line">
+                                    <div class="line-label">送货人员:</div>
+                                    <div class="line-value">{{ $order->ship_data['contact_name'] }}</div>
+                                </div>
+                                <div class="line">
+                                    <div class="line-label">联系方式:</div>
+                                    <div class="line-value">{{ $order->ship_data['contact_phone'] }}</div>
+                                </div>
+                            @endif
                         </div>
                         <div class="order-summary text-right">
                             <div class="total-amount">
@@ -91,8 +107,14 @@
                                     <button class="btn btn-info btn-sm btn-delivery">货到付款</button>
                                     {{--                                    <a class="btn btn-info btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付宝支付</a>--}}
                                 </div>
-                        @endif
+                            @endif
                         <!--支付结束-->
+                            {{--                            如果订单的发货状态为已发货则显示收货按钮--}}
+                            @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
+                                <div class="receive-button">
+                                    <button id="btn-received" class="btn btn-sm btn-success" type="button">确认收货</button>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -117,7 +139,7 @@
             $('.btn-delivery').click(function () {
                 axios.post('{{ route('payment.received', ['order' => $order->id]) }}').then(function () {
                     location.reload();
-                },function (error) {
+                }, function (error) {
                     // 请求失败
                     if (error.response.status === 401) {
                         // http 401 表示用户未登录
@@ -136,6 +158,28 @@
                     } else {
                         swal('系统错误', '', 'error');
                     }
+                });
+            });
+
+
+            // 取人收货按钮
+            $('#btn-received').click(function () {
+                // 弹出确认框
+                swal({
+                    title: '确认已经收到商品?',
+                    icon: "warning",
+                    dangerMode: true,
+                    buttons: ['还没', '确认收到'],
+                }).then(function (ret) {
+                    // 如果点击还没按钮则不做操作
+                    if (!ret) {
+                        return;
+                    }
+
+                    // ajax 提交确认操作
+                    axios.post('{{ route('orders.received', [$order->id]) }}').then(function () {
+                        location.reload();
+                    })
                 });
             });
         });
