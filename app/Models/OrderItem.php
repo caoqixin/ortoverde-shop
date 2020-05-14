@@ -12,7 +12,7 @@ class OrderItem extends Model
         'price',
         'rating',
         'review',
-        'reviewed_ar',
+        'reviewed_at',
     ];
     protected $dates = ['reviewed_at'];
     public $timestamps = false;

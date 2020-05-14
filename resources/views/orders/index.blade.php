@@ -53,7 +53,11 @@
                                                         <td rowspan="{{ count($order->items) }}" class="text-center">
                                                             @if($order->paid_at)
                                                                 @if($order->payment_method == 'delivery')
-                                                                    已确认
+                                                                    @if($order->ship_status === \App\Models\Order::SHIP_STATUS_PENDING)
+                                                                        已确认
+                                                                    @else
+                                                                        {{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}
+                                                                    @endif
                                                                 @else
                                                                     @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
                                                                         已支付
@@ -71,7 +75,17 @@
                                                             @endif
                                                         </td>
                                                         <td rowspan="{{ count($order->items) }}" class="text-center"><a
-                                                                    class="btn btn-primary btn-sm" href="{{ route('orders.show', ['order' => $order->id]) }}">查看订单</a></td>
+                                                                    class="btn btn-primary btn-sm"
+                                                                    href="{{ route('orders.show', ['order' => $order->id]) }}">查看订单</a>
+                                                            {{--                                                            评价开始--}}
+                                                            @if($order->paid_at)
+                                                                <a href="{{ route('orders.review.show', ['order' => $order->id]) }}"
+                                                                   class="btn btn-success btn-sm">
+                                                                    {{ $order->reviewed ? '查看评价' : '评价' }}
+                                                                </a>
+                                                            @endif
+                                                            {{--                                                            评价结束--}}
+                                                        </td>
                                                     @endif
                                                 </tr>
                                             @endforeach
