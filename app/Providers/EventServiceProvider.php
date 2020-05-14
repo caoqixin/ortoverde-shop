@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\DoShip;
 use App\Events\OrderPaid;
 use App\Listeners\SendOrderPaidMail;
+use App\Listeners\SendShipMessage;
 use App\Listeners\UpdateProductSoldCount;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -24,6 +26,9 @@ class EventServiceProvider extends ServiceProvider
         OrderPaid::class => [
             UpdateProductSoldCount::class,
             SendOrderPaidMail::class,
+        ],
+        DoShip::class => [
+            SendShipMessage::class,
         ],
     ];
 

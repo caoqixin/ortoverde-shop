@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Events\DoShip;
 use App\Exceptions\InvalidRequestException;
 use App\Models\Order;
 use Encore\Admin\Controllers\AdminController;
@@ -112,7 +113,15 @@ class OrdersController extends AdminController
             'ship_data' => $data,
         ]);
 
+        $this->afterDoShip($order);
+
         // 返回上一页
         return redirect()->back();
+    }
+
+
+    public function afterDoShip(Order $order)
+    {
+        event(new DoShip($order));
     }
 }
