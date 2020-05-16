@@ -28,4 +28,7 @@ Route::group([
     $router->get('orders/{order}', 'OrdersController@show')->name('admin.orders.show');
     // 订单发货
     $router->post('orders/{order}/ship', 'OrdersController@ship')->name('admin.orders.ship');
+
+    // 优惠券页面
+    $router->get('coupon_codes', 'CouponCodesController@index');
 });
