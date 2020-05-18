@@ -167,6 +167,7 @@
                     address_id: $('#order-form').find('select[name=address]').val(),
                     items: [],
                     remark: $('#order-form').find('textarea[name=remark]').val(),
+                    coupon_code: $('input[name=coupon_code]').val(),
                 };
 
                 // 遍历 <table> 标签内的所有带 data-id 属性的 <tr> 标签, 每个购物车的商品 sku
