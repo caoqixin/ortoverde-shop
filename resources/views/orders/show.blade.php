@@ -77,9 +77,25 @@
                             @endif
                         </div>
                         <div class="order-summary text-right">
+                            {{--                            展示优惠信息开始--}}
+                            @if($order->couponCode)
+                                <div class="text-primary">
+                                    <span>优惠信息: </span>
+                                    <div class="value">{{ $order->couponCode->description }}</div>
+                                </div>
+                            @endif
+                            {{--                            展示优惠信息结束--}}
+                            {{--                            运费--}}
+                            <div class="text-primary">
+                                <span>运费: </span>
+                                @php($shipping = 5)
+                                <div class="value">&euro; {{ $shipping }}</div>
+                            </div>
                             <div class="total-amount">
                                 <span>订单总价: </span>
-                                <div class="value">&euro; {{ $order->total_amount }}</div>
+                                {{--                                运费--}}
+                                <div class="value">
+                                    &euro; {{ $order->couponCode->type === \App\Models\CouponCode::TYPE_SHIPPING_FREE ? $order->total_amount :$order->total_amount + $shipping}}</div>
                             </div>
                             <div>
                                 <span>订单状态: </span>
