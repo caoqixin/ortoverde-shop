@@ -1,5 +1,5 @@
 // 从china-area-data 库中加载数据
-const addressData = require('china-area-data/v4/data');
+const addressData = require('italy-data/data.js');
 
 // 引入lodash, lodash是一个使用工具库, 提供很多常用的方法
 import _ from 'lodash';
@@ -18,7 +18,7 @@ Vue.component('select-town', {
         // 定义这个组件内的数据
         data() {
             return {
-                regions: addressData['86'], // 大区列表
+                regions: addressData['39'], // 大区列表
                 provinces: {}, // 省份列表
                 towns: {}, // comune列表
                 regionId: '', // 当前选中的大区
