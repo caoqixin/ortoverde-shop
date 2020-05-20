@@ -11,7 +11,7 @@
                     <a href="{{ route('user_addresses.create') }}" class="float-right">新增收货地址</a>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped table-responsive-md">
                         <thead>
                         <tr>
                             <th>收货人</th>
