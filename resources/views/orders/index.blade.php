@@ -16,7 +16,7 @@
                                         <span class="float-right">{{ $order->created_at->format('Y-m-d H:i:s') }}</span>
                                     </div>
                                     <div class="card-body">
-                                        <table class="table">
+                                        <table class="table table-responsive-md">
                                             <thead>
                                             <tr>
                                                 <th>商品信息</th>

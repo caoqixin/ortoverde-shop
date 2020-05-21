@@ -95,7 +95,9 @@
                                 <span>订单总价: </span>
                                 {{--                                运费--}}
                                 <div class="value">
-                                    &euro; {{ $order->couponCode->type === \App\Models\CouponCode::TYPE_SHIPPING_FREE ? $order->total_amount :$order->total_amount + $shipping}}</div>
+                                    &euro; {{
+                                    $order->couponCode ? $order->couponCode->type === \App\Models\CouponCode::TYPE_SHIPPING_FREE ? $order->total_amount :$order->total_amount + $shipping : $order->total_amount + $shipping
+                                    }}</div>
                             </div>
                             <div>
                                 <span>订单状态: </span>
