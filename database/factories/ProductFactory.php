@@ -17,6 +17,8 @@ $factory->define(Product::class, function (Faker $faker) {
         'images/20170824034129887.jpg',
         'images/FswacoUml-FyL2IrR7lvDN9uURik.jpg',
     ]);
+    // 从数据库中随机取一个类目
+    $category = \App\Models\Category::query()->where('is_directory', false)->inRandomOrder()->first();
     return [
         'title' => $faker->word,
         'description' => $faker->sentence,
@@ -26,5 +28,6 @@ $factory->define(Product::class, function (Faker $faker) {
         'sold_count' => 0,
         'review_count' => 0,
         'price' => 0,
+        'category_id'  => $category ? $category->id : null,
     ];
 });
