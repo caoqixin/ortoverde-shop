@@ -6,6 +6,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 
@@ -69,6 +70,7 @@ class ProductsController extends Controller
                 'order' => $order,
             ],
             'category' => $category ?? null,
+//            'categoryTree' => $categoryService->getCategoryTree(),
         ]);
     }
 

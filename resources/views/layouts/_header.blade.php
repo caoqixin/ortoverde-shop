@@ -12,7 +12,18 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- 左侧导航 -->
             <ul class="navbar-nav mr-auto">
-
+                {{--                顶部类目菜单开始--}}
+                {{--                判断模板是否有 $categoryTree 变量--}}
+                @if(isset($categoryTree))
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="categoryTree">所有类目 <b class="caret"></b></a>
+                        <ul class="dropdown-menu" aria-labelledby="categoryTree">
+{{--                            遍历 $categoryTree 集合, 将集合中的每一项以 $category 变量注入 layouts._category_item 模板中并渲染 --}}
+                            @each('layouts._category_item', $categoryTree, 'category')
+                        </ul>
+                    </li>
+                @endif
+                {{--                顶部类目菜单结束--}}
             </ul>
 
             <!-- 右侧导航 -->
@@ -23,7 +34,8 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">注册</a></li>
                 @else
                     <li class="nav-item">
-                        <a href="{{ route('cart.index') }}" class="nav-link mt-1"><i class="fa fa-shopping-cart"></i></a>
+                        <a href="{{ route('cart.index') }}" class="nav-link mt-1"><i
+                                    class="fa fa-shopping-cart"></i></a>
                     </li>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
