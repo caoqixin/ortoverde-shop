@@ -37,10 +37,29 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         // 如果 image 字段本身就时完整的url 就直接返回
-        if (Str::startsWith($this->attributes['image'], ['http://','https://'])) {
+        if (Str::startsWith($this->attributes['image'], ['http://', 'https://'])) {
             return $this->attributes['image'];
         }
 
         return \Storage::disk('shop')->url($this->attributes['image']);
+    }
+
+
+    // 加入属性 关联关系
+    public function properties()
+    {
+        return $this->hasMany(ProductProperty::class);
+    }
+
+    // 聚合商品属性
+    public function getGroupedPropertiesAttribute()
+    {
+        return $this->properties
+            // 按照属性名聚合, 返回的集合 key 是属性名, value 是包含该属性的多有属性集合
+            ->groupBy('name')
+            ->map(function ($properties) {
+                // 使用 map 方法将属性集合变为属性值集合
+                return $properties->pluck('value')->all();
+            });
     }
 }

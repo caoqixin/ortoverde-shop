@@ -94,6 +94,13 @@ class ProductsController extends AdminController
             $form->text('stock', '剩余库存')->rules('required|integer|min:0');
         });
 
+
+        // 添加 商品属性
+        $form->hasMany('properties', '商品属性', function (Form\NestedForm $form) {
+            $form->text('name', '属性名')->rules('required');
+            $form->text('value', '属性值')->rules('required');
+        });
+
         // 定义事件回调, 当模型即将保存时会触发
         $form->saving(function (Form $form) {
             $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price')?:0;
