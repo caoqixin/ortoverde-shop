@@ -69,6 +69,7 @@ class ProductsController extends AdminController
 
         // 创建一个输入框, 第一个参数是 title 是模型的字段名, 第二个参数是该字段描述
         $form->text('title', '商品名称')->rules('required');
+        $form->text('long_title', '商品长标题')->rules('required');
         // 添加类目字段, 与类目管理相似, 使用 Ajax 的方式来搜索
         $form->select('category_id', '类目')->options(function ($id) {
             $category = Category::find($id);
