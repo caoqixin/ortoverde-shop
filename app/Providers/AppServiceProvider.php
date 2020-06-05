@@ -6,6 +6,8 @@ use App\Http\ViewComposers\CategoryTreeComposer;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Logger;
 use Yansongda\Pay\Pay;
+// 导入 ElasticSearch
+use Elasticsearch\ClientBuilder as ESClientBuilder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,20 @@ class AppServiceProvider extends ServiceProvider
             }
             // 调用 Yansongda\Pay 来创建一个微信支付对象
             return Pay::wechat($config);
+        });
+
+        // 注册elastic search
+        $this->app->singleton('es', function () {
+            // 从配置文件读取 ElasticSearch 服务器列表
+            $builder = ESClientBuilder::create()->setHosts(config('database.elasticsearch.hosts'));
+
+            if (app()->environment() == 'local') {
+                // 如果是开发环境
+                // 配置日志, Elasticsearch 的请求和返回数据将打印到日志文件中，方便我们调试
+                $builder->setLogger(app('log')->driver());
+            }
+
+            return $builder->build();
         });
     }
 
