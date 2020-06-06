@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Jobs\SyncOneProudctsToES;
 use App\Models\Category;
 use App\Models\Product;
 use Encore\Admin\Controllers\AdminController;
@@ -105,6 +106,12 @@ class ProductsController extends AdminController
         // 定义事件回调, 当模型即将保存时会触发
         $form->saving(function (Form $form) {
             $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price')?:0;
+        });
+
+        // 定义事件回调, 当模型 saved 时触发
+        $form->saved(function (Form $form) {
+            $product = $form->model();
+            dispatch(new SyncOneProudctsToES($product));
         });
 
         return $form;
