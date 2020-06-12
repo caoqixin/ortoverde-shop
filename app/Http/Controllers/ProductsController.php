@@ -24,7 +24,6 @@ class ProductsController extends Controller
         $builder = (new ProductSearchBuilder())->onSale()->paginate($perPage, $page);
 
 
-
         // 是否有提交 order 参数, 如果有就赋值给 $order 变量
         // order 参数用来控制商品的排序规则
         if ($order = $request->input('order', '')) {
@@ -151,10 +150,41 @@ class ProductsController extends Controller
             ->limit(10)
             ->get();
 
+
+        // 推荐商品
+        // 创建一个查询构造器，只搜索上架的商品，取搜索结果的前 4 个商品
+        $builder = (new  ProductSearchBuilder())->onSale()->paginate(4, 1);
+        // 遍历当前商品的属性
+        foreach ($product->properties as $property) {
+            // 添加到 should 条件中
+            $builder->propertyFilter($property->name, $property->value, 'should');
+        }
+
+        // 设置最少匹配一半属性
+        $builder->minShouldMatch(ceil(count($product->properties) / 2));
+        $params = $builder->getParams();
+
+        // 同时当前商品的 Id 排除
+        $params['body']['query']['bool']['must_not'] = [
+            ['term' => ['_id' => $product->id]],
+        ];
+
+        // 搜索
+        $result = app('es')->search($params);
+        $similarProductIds = collect($result['hits']['hits'])->pluck('_id')->all();
+
+        // 根据 Elasticsearch 搜索出来的 商品 Id 从数据库中取出商品数据
+        $similarProducts = Product::query()
+            ->whereIn('id', $similarProductIds)
+            ->orderByRaw(sprintf("FIND_IN_SET(id, '%s')", join(',', $similarProductIds)))
+            ->get();
+
+
         return view('products.show', [
             'product' => $product,
             'favored' => $favored,
             'reviews' => $reviews,
+            'similar' => $similarProducts,
         ]);
     }
 
