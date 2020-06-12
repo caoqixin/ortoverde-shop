@@ -167,7 +167,10 @@ class Product extends Model
 
         // 取出需要的 商品属性 字段
         $arr['properties'] = $this->properties->map(function (ProductProperty $property) {
-            return Arr::only($property->toArray(), ['name', 'value']);
+            // 增加一个 search_value 字段，用符号 : 将属性名和属性值拼接起来
+            return array_merge(Arr::only($property->toArray(), ['name', 'value']), [
+                'search_value' => $property->name . ':' . $property->value,
+            ]);
         });
 
         return $arr;
